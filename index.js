@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/v1/chat/completions' && req.method === 'POST') {
+  if (req.url === '/duckchat/v1/chat' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
     req.on('end', async () => {
@@ -37,7 +37,7 @@ const server = http.createServer((req, res) => {
         
         console.log(`[LOG] Rotação: Usando chave na posição ${randomIndex + 1}`);
 
-        const response = await fetch('https://duck.ai/v1/chat/completions', {
+        const response = await fetch('https://duck.ai/duckchat/v1/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
     });
   } else {
     res.writeHead(404);
-    res.end('Use a rota /v1/chat/completions');
+    res.end('Use a rota /duckchat/v1/chat');
   }
 });
 

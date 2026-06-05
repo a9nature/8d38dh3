@@ -292,7 +292,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                const resposta = await fetch(`${API_URL}/v1/chat/completions`, {
+                const resposta = await fetch(`${API_URL}duckchat/v1/chat`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

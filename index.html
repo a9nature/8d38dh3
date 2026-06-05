@@ -36,19 +36,44 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px 12px 0 0;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 5px;
         }
 
-        .header p {
+        .model-selector-container {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-selector-container label {
             font-size: 12px;
             opacity: 0.9;
+        }
+
+        .model-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .model-select option {
+            background: #764ba2;
+            color: white;
         }
 
         .chat-box {
@@ -67,13 +92,8 @@
             animation: slideIn 0.3s ease;
         }
 
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message.bot {
-            justify-content: flex-start;
-        }
+        .message.user { justify-content: flex-end; }
+        .message.bot { justify-content: flex-start; }
 
         .message-content {
             max-width: 70%;
@@ -114,32 +134,17 @@
             animation: bounce 1.4s infinite;
         }
 
-        .typing span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes bounce {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .input-area {
@@ -196,42 +201,25 @@
             cursor: not-allowed;
         }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border-left: 4px solid #c33;
-            margin: 10px 0;
-        }
-
-        .status {
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            padding: 10px;
-        }
-
         @media (max-width: 600px) {
-            .message-content {
-                max-width: 90%;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .container {
-                max-height: 90vh;
-            }
+            .message-content { max-width: 90%; }
+            .header h1 { font-size: 22px; }
+            .container { max-height: 90vh; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 IAZZ</h1>
-            <p>Powered by Duck.ai + Claude</p>
+            <h1>🤖 IAZZ CHAT</h1>
+            <div class="model-selector-container">
+                <label for="modelSelect">Escolha o Modelo:</label>
+                <select id="modelSelect" class="model-select">
+                    <option value="gpt-4o-mini">ChatGPT 4o Mini</option>
+                    <option value="gpt-5-mini">ChatGPT 5 Mini</option>
+                    <option value="claude-4.5-haiku">Claude 4.5 Haiku</option>
+                </select>
+            </div>
         </div>
 
         <div class="chat-box" id="chatBox"></div>
@@ -247,19 +235,17 @@
     </div>
 
     <script>
-        // ⚙️ CONFIGURAÇÃO
         const API_URL = "/duckchat/v1/chat"; 
         const chatBox = document.getElementById('chatBox');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
+        const modelSelect = document.getElementById('modelSelect');
 
-        // Auto-resize textarea
         userInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 100) + 'px';
         });
 
-        // Enviar com Enter (Shift+Enter para quebra de linha)
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -269,22 +255,20 @@
 
         async function enviarMensagem() {
             const mensagem = userInput.value.trim();
+            const modeloSelecionado = modelSelect.value; 
 
             if (!mensagem) {
                 alert('Digite uma mensagem!');
                 return;
             }
 
-            // Desabilita input
             sendBtn.disabled = true;
             userInput.disabled = true;
 
-            // Mostra mensagem do usuário
             adicionarMensagem(mensagem, 'user');
             userInput.value = '';
             userInput.style.height = 'auto';
 
-            // Mostra "digitando"
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message bot';
             typingDiv.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
@@ -292,21 +276,19 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                // 🟢 CORRIGIDO AQUI: Agora chama apenas a variável API_URL sem duplicar
                 const resposta = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'claude-3-haiku',
+                        model: modeloSelecionado, 
                         messages: [
-                            { role: 'user', content: mensagem }
+                            { role: 'user', content: message = mensagem }
                         ]
                     })
                 });
 
-                // Remove "digitando"
                 typingDiv.remove();
 
                 if (!resposta.ok) {
@@ -320,10 +302,7 @@
 
             } catch (erro) {
                 typingDiv.remove();
-                adicionarMensagem(
-                    `❌ Erro: ${erro.message}`,
-                    'bot'
-                );
+                adicionarMensagem(`❌ Erro: ${erro.message}`, 'bot');
                 console.error('Erro:', erro);
             } finally {
                 sendBtn.disabled = false;
@@ -335,17 +314,14 @@
         function adicionarMensagem(texto, tipo) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${tipo}`;
-            
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
             contentDiv.textContent = texto;
-            
             messageDiv.appendChild(contentDiv);
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Foco no input ao carregar
         userInput.focus();
     </script>
 </body>

@@ -10,6 +10,9 @@ app.use(cors());
 // Permite que o servidor entenda requisições com formato JSON
 app.use(express.json());
 
+// 🟢 ADICIONE ESTA LINHA AQUI (para o servidor achar seu HTML do front-end)
+app.use(express.static(__dirname));
+
 // 1. CARREGA AS SUAS 10 MAINKEYS DO NOVO SISTEMA DO DUCK.AI
 const DUCK_KEYS = [
   process.env.DUCK_KEY_1, process.env.DUCK_KEY_2, process.env.DUCK_KEY_3,
@@ -31,12 +34,27 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url === '/duckchat/v1/chat' && req.method === 'POST') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
-      try {
-        const parsedBody = JSON.parse(body);
+ app.post('/duckchat/v1/chat', async (req, res) => {
+    try {
+        // O Express já faz o JSON.parse(body) automaticamente para você!
+        // Os dados que vinham no 'parsedBody' agora estão em 'req.body'
+        const parsedBody = req.body;
+
+        // ========================================================
+        // 🟢 COLE O RESTO DO SEU CÓDIGO DO DUCK AQUI EMBAIXO:
+        // (A parte que faz o fetch pro Duck, usa as chaves, etc.)
+        // ========================================================
+        
+
+
+        // No final da sua lógica, lembre-se de responder o front-end usando:
+        // res.json(resposta_do_duck);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro interno no servidor" });
+    }
+});
 
         if (DUCK_KEYS.length === 0) {
           throw new Error('Nenhuma DUCK_KEY foi configurada nas variáveis de ambiente.');

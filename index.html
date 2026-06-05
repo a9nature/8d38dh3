@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IAZZ - IA com Duck.ai</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,7 +15,6 @@
             align-items: center;
             padding: 20px;
         }
-
         .container {
             background: white;
             border-radius: 12px;
@@ -32,7 +26,6 @@
             height: 80vh;
             max-height: 600px;
         }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -40,12 +33,7 @@
             border-radius: 12px 12px 0 0;
             text-align: center;
         }
-
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
         .model-selector-container {
             margin-top: 10px;
             display: flex;
@@ -53,12 +41,7 @@
             align-items: center;
             gap: 10px;
         }
-
-        .model-selector-container label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
+        .model-selector-container label { font-size: 12px; opacity: 0.9; }
         .model-select {
             padding: 6px 12px;
             border-radius: 6px;
@@ -70,12 +53,7 @@
             outline: none;
             cursor: pointer;
         }
-
-        .model-select option {
-            background: #764ba2;
-            color: white;
-        }
-
+        .model-select option { background: #764ba2; color: white; }
         .chat-box {
             flex: 1;
             overflow-y: auto;
@@ -85,16 +63,9 @@
             flex-direction: column;
             gap: 15px;
         }
-
-        .message {
-            display: flex;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-        }
-
+        .message { display: flex; gap: 10px; animation: slideIn 0.3s ease; }
         .message.user { justify-content: flex-end; }
         .message.bot { justify-content: flex-start; }
-
         .message-content {
             max-width: 70%;
             padding: 12px 16px;
@@ -103,109 +74,51 @@
             line-height: 1.5;
             font-size: 14px;
         }
-
         .message.user .message-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
-
         .message.bot .message-content {
             background: #e9ecef;
             color: #333;
             border-bottom-left-radius: 4px;
         }
-
         .typing {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            padding: 12px 16px;
-            background: #e9ecef;
-            border-radius: 12px;
-            width: fit-content;
+            display: flex; gap: 4px; align-items: center; padding: 12px 16px;
+            background: #e9ecef; border-radius: 12px; width: fit-content;
         }
-
         .typing span {
-            width: 8px;
-            height: 8px;
-            background: #999;
-            border-radius: 50%;
+            width: 8px; height: 8px; background: #999; border-radius: 50%;
             animation: bounce 1.4s infinite;
         }
-
         .typing span:nth-child(2) { animation-delay: 0.2s; }
         .typing span:nth-child(3) { animation-delay: 0.4s; }
-
         @keyframes bounce {
             0%, 60%, 100% { transform: translateY(0); }
             30% { transform: translateY(-10px); }
         }
-
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .input-area {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #eee;
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
+            padding: 20px; background: white; border-top: 1px solid #eee;
+            display: flex; gap: 10px; align-items: flex-end;
         }
-
         .input-area textarea {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: none;
-            max-height: 100px;
-            min-height: 44px;
+            flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 14px; font-family: inherit; resize: none; max-height: 100px; min-height: 44px;
         }
-
-        .input-area textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        .input-area textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
         .send-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 80px;
+            color: white; border: none; padding: 12px 24px; border-radius: 8px;
+            cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s;
+            height: 44px; display: flex; align-items: center; justify-content: center; min-width: 80px;
         }
-
-        .send-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 600px) {
-            .message-content { max-width: 90%; }
-            .header h1 { font-size: 22px; }
-            .container { max-height: 90vh; }
-        }
+        .send-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); }
+        .send-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -225,11 +138,7 @@
         <div class="chat-box" id="chatBox"></div>
 
         <div class="input-area">
-            <textarea 
-                id="userInput" 
-                placeholder="Digite sua pergunta..." 
-                rows="1"
-            ></textarea>
+            <textarea id="userInput" placeholder="Digite sua pergunta..." rows="1"></textarea>
             <button class="send-btn" id="sendBtn" onclick="enviarMensagem()">Enviar</button>
         </div>
     </div>
@@ -284,7 +193,7 @@
                     body: JSON.stringify({
                         model: modeloSelecionado, 
                         messages: [
-                            { role: 'user', content: message = mensagem }
+                            { role: 'user', content: mensagem } // 🟢 CORRIGIDO: Removido o '=' que quebrava o JSON
                         ]
                     })
                 });

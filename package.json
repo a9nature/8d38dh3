@@ -1,12 +1,13 @@
 {
-  "name": "proxy-duck",
+  "name": "meu-servidor-duck",
   "version": "1.0.0",
+  "description": "Proxy para o Duck Chat",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
   }
-}
-"dependencies": {
-  "express": "^4.19.2",
-  "cors": "^2.8.5"
 }

@@ -1,4 +1,14 @@
+const express = require('express');
+const cors = require('cors');
 const http = require('http');
+
+const app = express();
+
+// Ativa a liberação do CORS para acabar com o "Failed to fetch"
+app.use(cors());
+
+// Permite que o servidor entenda requisições com formato JSON
+app.use(express.json());
 
 // 1. CARREGA AS SUAS 10 MAINKEYS DO NOVO SISTEMA DO DUCK.AI
 const DUCK_KEYS = [

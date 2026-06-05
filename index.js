@@ -1,105 +1,80 @@
 const express = require('express');
 const cors = require('cors');
-const http = require('http');
 
 const app = express();
 
 // Ativa a liberação do CORS para acabar com o "Failed to fetch"
 app.use(cors());
 
-// Permite que o servidor entenda requisições com formato JSON
+// Permite que o servidor entenda requisições com formato JSON automaticamente
 app.use(express.json());
 
-// 🟢 ADICIONE ESTA LINHA AQUI (para o servidor achar seu HTML do front-end)
+// Permite que o servidor encontre e abra o seu arquivo HTML do front-end
 app.use(express.static(__dirname));
 
-// 1. CARREGA AS SUAS 10 MAINKEYS DO NOVO SISTEMA DO DUCK.AI
-const DUCK_KEYS = [
+// CARREGA AS SUAS 10 MAINKEYS DO NOVO SISTEMA DO DUCK.AI
+const DUK_KEYS = [
   process.env.DUCK_KEY_1, process.env.DUCK_KEY_2, process.env.DUCK_KEY_3,
   process.env.DUCK_KEY_4, process.env.DUCK_KEY_5, process.env.DUCK_KEY_6,
   process.env.DUCK_KEY_7, process.env.DUCK_KEY_8, process.env.DUCK_KEY_9,
   process.env.DUCK_KEY_10
 ].filter(Boolean); 
 
-const PORT = process.env.PORT || 3000;
+// ROTA DO SEU FRONT-END CONECTADA AO EXPRESS
+app.post('/duckchat/v1/chat', async (req, res) => {
+  try {
+    // O Express já tratou o JSON e guardou no req.body
+    const parsedBody = req.body;
 
-const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
-
- app.post('/duckchat/v1/chat', async (req, res) => {
-    try {
-        // O Express já faz o JSON.parse(body) automaticamente para você!
-        // Os dados que vinham no 'parsedBody' agora estão em 'req.body'
-        const parsedBody = req.body;
-
-        // ========================================================
-        // 🟢 COLE O RESTO DO SEU CÓDIGO DO DUCK AQUI EMBAIXO:
-        // (A parte que faz o fetch pro Duck, usa as chaves, etc.)
-        // ========================================================
-        
-
-
-        // No final da sua lógica, lembre-se de responder o front-end usando:
-        // res.json(resposta_do_duck);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erro interno no servidor" });
+    // Verifica se as chaves foram configuradas no Render
+    if (DUK_KEYS.length === 0) {
+      throw new Error('Nenhuma DUCK_KEY foi configurada nas variáveis de ambiente.');
     }
-});
 
-        if (DUCK_KEYS.length === 0) {
-          throw new Error('Nenhuma DUCK_KEY foi configurada nas variáveis de ambiente.');
-        }
+    // Sistema de rotação aleatória de chaves
+    const randomIndex = Math.floor(Math.random() * DUK_KEYS.length);
+    const selectedKey = DUK_KEYS[randomIndex];
+    
+    console.log(`[LOG] Rotação: Usando chave na posição ${randomIndex + 1}`);
 
-        const randomIndex = Math.floor(Math.random() * DUCK_KEYS.length);
-        const selectedKey = DUCK_KEYS[randomIndex];
-        
-        console.log(`[LOG] Rotação: Usando chave na posição ${randomIndex + 1}`);
-
-        const response = await fetch('https://duck.ai/duckchat/v1/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${selectedKey}`,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          },
-          body: JSON.stringify({
-            model: parsedBody.model || 'claude-3-haiku',
-            messages: parsedBody.messages,
-            stream: false
-          })
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Resposta do Duck.ai: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(data));
-
-      } catch (error) {
-        console.error(`[ERRO] ${error.message}`);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Erro no proxy', details: error.message }));
-      }
+    // Faz o envio seguro ocultando as chaves do Front-end
+    const response = await fetch('https://duck.ai/duckchat/v1/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${selectedKey}`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      body: JSON.stringify({
+        model: parsedBody.model || 'claude-3-haiku',
+        messages: parsedBody.messages,
+        stream: false
+      })
     });
-  } else {
-    res.writeHead(404);
-    res.end('Use a rota /duckchat/v1/chat');
+
+    // Se o Duck responder com erro
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Resposta do Duck.ai: ${response.status} - ${errorText}`);
+    }
+
+    // Devolve os dados recebidos do Duck direto para o seu Front-end
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error(`[ERRO] ${error.message}`);
+    res.status(500).json({ error: 'Erro no proxy', details: error.message });
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Gerenciador Duck.ai Atualizado rodando na porta ${PORT}`);
+// Resposta amigável caso alguém tente entrar na rota da API via navegador (GET)
+app.get('/duckchat/v1/chat', (req, res) => {
+  res.status(405).send('Use requisições do tipo POST para interagir com o chat.');
+});
+
+// Configuração correta da porta para o ambiente do Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Gerenciador Duck.ai rodando perfeitamente na porta ${PORT}`);
 });

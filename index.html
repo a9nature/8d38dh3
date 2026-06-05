@@ -247,11 +247,11 @@
     </div>
 
     <script>
-     // ⚙️ CONFIGURAÇÃO
-const API_URL = "/duckchat/v1/chat"; // 🟢 Mude para isso! Deixe apenas a rota.
-const chatBox = document.getElementById('chatBox');
-const userInput = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
+        // ⚙️ CONFIGURAÇÃO
+        const API_URL = "/duckchat/v1/chat"; 
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
         // Auto-resize textarea
         userInput.addEventListener('input', function() {
@@ -292,7 +292,8 @@ const sendBtn = document.getElementById('sendBtn');
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                const resposta = await fetch(`${API_URL}duckchat/v1/chat`, {
+                // 🟢 CORRIGIDO AQUI: Agora chama apenas a variável API_URL sem duplicar
+                const resposta = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

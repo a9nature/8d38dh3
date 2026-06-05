@@ -1,12 +1,15 @@
 const http = require('http');
 
 // 1. CARREGA AS SUAS 10 MAINKEYS DO NOVO SISTEMA DO DUCK.AI
-// O script vai pegar esses valores direto das variáveis que você configurou na Zeabur
 const DUCK_KEYS = [
-  process.env.8TfGA_XnKl7vw_YIbZa6GkOCxSravr-5aXb0B9nzByk
-].filter(Boolean); // Remove linhas vazias caso você coloque menos de 10
+  process.env.DUCK_KEY_1, process.env.DUCK_KEY_2, process.env.DUCK_KEY_3,
+  process.env.DUCK_KEY_4, process.env.DUCK_KEY_5, process.env.DUCK_KEY_6,
+  process.env.DUCK_KEY_7, process.env.DUCK_KEY_8, process.env.DUCK_KEY_9,
+  process.env.DUCK_KEY_10
+].filter(Boolean); 
 
 const PORT = process.env.PORT || 3000;
+// ... o resto do código continua igual abaixo
 
 const server = http.createServer((req, res) => {
   // Libera o acesso para o seu LobeChat (CORS) para evitar erros de segurança
